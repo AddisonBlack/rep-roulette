@@ -1,3 +1,31 @@
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function hasStartedToday(groupId) {
+  const key = `repRoulette:started:${todayKey()}`;
+  try { 
+    const ids = JSON.parse(localStorage.getItem(key)) || [];
+    return ids.includes(groupId);
+  } catch { 
+    return false; 
+  }
+}
+
+function markStartedToday(groupId) {
+  const key = `repRoulette:started:${todayKey()}`;
+  let ids = [];
+  try { ids = JSON.parse(localStorage.getItem(key)) || []; } catch {}
+  if (!ids.includes(groupId)) ids.push(groupId);
+  localStorage.setItem(key, JSON.stringify(ids));
+}
+
+function setNamesBlurred(on) {
+  document.querySelectorAll(".name").forEach(el => {
+    el.classList.toggle("blurred", on);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const dateElement = document.querySelector(".date");
   const options = { weekday: "long", month: "long", day: "numeric" };
@@ -5,25 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
   dateElement.textContent = today.toLocaleDateString("en-US", options);
 
   const nameContainer = document.querySelector(".name-container");
-  const startScreen = document.getElementById("start-screen");
-  const startBtn = startScreen?.querySelector(".start-btn");
   const shuffleBtn = document.querySelector(".name-container .shuffle");
-  const mascot = document.querySelector(".corner-image");
 
-  const todayKey = new Date().toISOString().slice(0, 10);
-  const STORAGE_KEY_DAY = "repRoulette:startUsedDate";
   const STORAGE_KEY_ORDER = "repRoulette:namesOrder";
-  const STORAGE_KEY_MASCOT = "repRoulette:mascotVisible";
-
-  function showMain() {
-    if (nameContainer) nameContainer.style.display = "flex";
-    if (startScreen) startScreen.style.display = "none";
-  }
-
-  function showStart() {
-    if (nameContainer) nameContainer.style.display = "none";
-    if (startScreen) startScreen.style.display = "flex";
-  }
 
   function getNameNodes() {
     return Array.from(nameContainer.querySelectorAll(".name"));
@@ -67,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         n.style.transition = 'none';
         n.style.transform = `translate(${dx}px, ${dy}px)`;
         n.style.opacity = '0.9';
-        n.getBoundingClientRect(); // force reflow
+        n.getBoundingClientRect();
         requestAnimationFrame(() => {
           n.style.transition = 'transform 300ms ease, opacity 300ms ease';
           n.style.transform = '';
@@ -77,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
   const savedOrder = localStorage.getItem(STORAGE_KEY_ORDER);
   if (savedOrder) {
     try {
@@ -85,44 +96,272 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch {}
   }
 
-  const lastUsed = localStorage.getItem(STORAGE_KEY_DAY);
-  if (lastUsed === todayKey) {
-    showMain();
-  } else {
-    if (savedOrder) {
-      showMain();
-    } else {
-      showStart();
+  shuffleBtn?.addEventListener("click", () => {
+    const btn = document.querySelector(".name-container .shuffle");
+    const mode = (btn?.dataset.mode) || "normal";
+
+    if (mode === "prestart") {
+      setNamesBlurred(false);
+      if (currentGroupId) markStartedToday(currentGroupId);
+      if (btn) {
+        btn.innerHTML = '<i class="animation"></i>SHUFFLE<i class="animation"></i>';
+        btn.dataset.mode = "normal";
+      }
+      return;
     }
-  }
 
-  if (localStorage.getItem(STORAGE_KEY_MASCOT) === "true") {
-    if (mascot) mascot.style.display = "flex";
-  }
-
-  startBtn?.addEventListener("click", () => {
+    const nameContainer = document.querySelector(".name-container");
     const buttonRow = nameContainer.querySelector("div");
-    const nameEls = getNameNodes();
+    const nameEls = Array.from(nameContainer.querySelectorAll(".name"));
+    if (nameEls.length <= 1) return;
+
+    const prevFirstText = nameEls[0].textContent.trim();
+
+    let newOrder = shuffleNodes(nameEls);
+    if (nameEls.length === 2) {
+      if (newOrder[0].textContent.trim() === prevFirstText) newOrder.reverse();
+    } else {
+      while (newOrder[0].textContent.trim() === prevFirstText) {
+        newOrder = shuffleNodes(nameEls);
+      }
+    }
+
     flipAnimate(nameEls, () => {
-      const shuffled = shuffleNodes(nameEls);
-      shuffled.forEach(el => nameContainer.insertBefore(el, buttonRow));
+      newOrder.forEach(n => nameContainer.insertBefore(n, buttonRow));
     });
     saveCurrentOrder();
-    localStorage.setItem(STORAGE_KEY_DAY, todayKey);
-    localStorage.setItem(STORAGE_KEY_MASCOT, "true");
-    showMain();
-    if (mascot) mascot.style.display = "flex";
   });
+});
 
-  shuffleBtn?.addEventListener("click", () => {
-    const nameEls = getNameNodes();
-    if (nameEls.length > 1) {
-      const last = nameEls[nameEls.length - 1];
-      const first = nameEls[0];
-      flipAnimate(nameEls, () => {
-        nameContainer.insertBefore(last, first);
-      });
-      saveCurrentOrder();
+document.addEventListener("DOMContentLoaded", () => {
+  const membersStack = document.getElementById("members");
+  const addIcon = document.querySelector(".ph-user-plus");
+
+  function makeMemberRow(value = "") {
+    const row = document.createElement("div");
+    row.className = "members-row";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "member-name";
+    input.placeholder = "Add a member";
+    input.value = value;
+
+    const minus = document.createElement("i");
+    minus.className = "ph ph-user-minus";
+    minus.setAttribute("role", "button");
+    minus.setAttribute("aria-label", "Remove member");
+
+    row.append(input, minus);
+    return row;
+  }
+
+  function addMemberRow() {
+    const row = makeMemberRow();
+    membersStack.appendChild(row);
+    row.querySelector(".member-name").focus();
+  }
+
+  addIcon?.addEventListener("click", addMemberRow);
+
+  membersStack?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.classList.contains("member-name")) {
+      e.preventDefault();
+      addMemberRow();
     }
   });
+
+  membersStack?.addEventListener("click", (e) => {
+    const minus = e.target.closest(".ph-user-minus");
+    if (!minus) return;
+
+    const rows = membersStack.querySelectorAll(".members-row");
+    const row = minus.closest(".members-row");
+    if (rows.length > 1) {
+      row.remove();
+      membersStack.querySelector(".members-row:last-child .member-name")?.focus();
+    } else {
+      const input = row.querySelector(".member-name");
+      input.value = "";
+      input.focus();
+    }
+  });
+});
+
+const STORAGE_KEY_GROUPS = "repRoulette:groups";
+
+function readGroups() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY_GROUPS)) || []; } catch { return []; }
+}
+
+function writeGroups(groups) {
+  localStorage.setItem(STORAGE_KEY_GROUPS, JSON.stringify(groups));
+}
+
+const savedGroupsContainer = document.querySelector(".saved-groups-container");
+const savedGroupsMessage = document.querySelector(".saved-groups-message");
+let savedGroupsList = document.querySelector(".saved-groups-list");
+
+function ensureSavedGroupsList() {
+  if (!savedGroupsList) {
+    savedGroupsList = document.createElement("ul");
+    savedGroupsList.className = "saved-groups-list";
+    savedGroupsContainer.appendChild(savedGroupsList);
+  }
+}
+
+let currentGroupId = null;
+
+savedGroupsList?.addEventListener("click", (e) => {
+  const li = e.target.closest(".saved-group");
+  if (!li) return;
+  const id = li.dataset.id;
+
+  const groups = readGroups();
+  const g = groups.find(x => x.id === id);
+  if (!g) return;
+
+  currentGroupId = id;
+  setNamesInMain(g.members);
+  document.querySelector(".opening-screen").style.display = "none";
+
+  const shuffleBtn = document.querySelector(".name-container .shuffle");
+  if (!hasStartedToday(id)) {
+    setNamesBlurred(true);
+    shuffleBtn.innerHTML = '<i class="animation"></i>START SET<i class="animation"></i>';
+    shuffleBtn.dataset.mode = "prestart";
+  } else {
+    setNamesBlurred(false);
+    shuffleBtn.innerHTML = '<i class="animation"></i>SHUFFLE<i class="animation"></i>';
+    shuffleBtn.dataset.mode = "normal";
+  }
+});
+
+savedGroupsList?.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const li = e.target.closest(".saved-group");
+  if (li) li.click();
+});
+
+function renderSavedGroups() {
+  ensureSavedGroupsList();
+  const groups = readGroups();
+
+  if (!groups.length) {
+    savedGroupsMessage.hidden = false;
+    savedGroupsList.hidden = true;
+    savedGroupsList.innerHTML = "";
+    return;
+  }
+
+  savedGroupsMessage.hidden = true;
+  savedGroupsList.hidden = false;
+  savedGroupsList.innerHTML = "";
+
+  groups.forEach(g => {
+    const li = document.createElement("li");
+    li.className = "saved-group";
+    li.dataset.id = g.id;
+    li.textContent = g.name;
+    li.setAttribute("role", "button");
+    li.tabIndex = 0;
+    savedGroupsList.appendChild(li);
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", renderSavedGroups);
+
+function populateGroupSelect() {
+  const select = document.getElementById("group-select");
+  if (!select) return;
+  const groups = readGroups();
+  select.innerHTML = "";
+  groups.forEach(g => {
+    const opt = document.createElement("option");
+    opt.value = g.id;
+    opt.textContent = g.name;
+    select.appendChild(opt);
+  });
+}
+
+function currentMembersFromUI() {
+  return Array.from(document.querySelectorAll("#members .member-name"))
+    .map(i => i.value.trim())
+    .filter(Boolean);
+}
+
+function setNamesInMain(names) {
+  const nameContainer = document.querySelector(".name-container");
+  const buttonRow = nameContainer.querySelector("div");
+  Array.from(nameContainer.querySelectorAll(".name")).forEach(n => n.remove());
+  names.forEach(n => {
+    const p = document.createElement("p");
+    p.className = "name";
+    p.textContent = n;
+    nameContainer.insertBefore(p, buttonRow);
+  });
+  localStorage.removeItem("repRoulette:namesOrder");
+}
+
+const createGroupBtn = document.querySelector(".create-group");
+const createPanel = document.querySelector(".create-panel");
+
+createGroupBtn?.addEventListener("click", () => { 
+  createPanel.style.display = "flex";
+  createPanel.removeAttribute("hidden");
+});
+
+const selectGroupBtn = document.querySelector(".select-group");
+const selectPanel = document.querySelector(".select-panel");
+
+selectGroupBtn?.addEventListener("click", () => {
+  populateGroupSelect();
+  selectPanel.style.display = "flex";
+  selectPanel.removeAttribute("hidden");
+});
+
+const finishBtn = document.querySelector(".finish-creating-group");
+
+finishBtn?.addEventListener("click", () => {
+  createPanel.style.display = "none";
+  const name = document.querySelector(".group-name").value.trim();
+  const members = currentMembersFromUI();
+  if (!name || members.length === 0) return;
+
+  const groups = readGroups();
+  const idx = groups.findIndex(g => g.name.toLowerCase() === name.toLowerCase());
+  const id = idx >= 0 ? groups[idx].id : String(Date.now());
+  const group = { id, name, members, createdAt: new Date().toISOString() };
+  if (idx >= 0) groups[idx] = group; else groups.push(group);
+  writeGroups(groups);
+
+  if (readGroups().length === 1) {
+    savedGroupsMessage.textContent = name;
+    savedGroupsMessage.hidden = false;
+    savedGroupsList.hidden = true;
+  } else {
+    savedGroupsMessage.hidden = true;
+    savedGroupsList.hidden = false;
+  }
+
+  renderSavedGroups();
+  populateGroupSelect();
+});
+
+const loadBtn = document.querySelector(".load-group");
+loadBtn?.addEventListener("click", () => {
+  const select = document.getElementById("group-select");
+  if (!select) return;
+  const id = select.value;
+  const groups = readGroups();
+  const g = groups.find(x => x.id === id);
+  if (!g) return;
+  setNamesInMain(g.members);
+  document.querySelector(".opening-screen").style.display = "none";
+});
+
+
+document.querySelector(".close-creating-group")?.addEventListener("click", () => {
+  createPanel.style.display = "none";
 });

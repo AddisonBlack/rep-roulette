@@ -20,24 +20,45 @@
     <p class="date"></p>
   </div>
 
-  
-  <div id="start-screen">
-    <button class="shuffle start-btn">
-      <i class="animation"></i>Start Workout<i class="animation"></i>
-    </button>
+  <div class="opening-screen">
+    <div class="opening-container">
+      <div class="button-container">
+        <button class="create-group"><i class="animation"></i>CREATE GROUP<i class="animation"></i></button>
+      </div>
+      <div class="create-panel" hidden>
+        <div class="field">
+          <label for="group-name" class="group-name-label">New Group</label>
+          <input class="group-name" type="text" placeholder="Create a group name" />
+          <div id="members" class="members">
+            <div class="members-row">
+              <input class="member-name" type="text" placeholder="Add a member" />
+              <i class="ph ph-user-minus"></i>
+            </div>
+          </div>
+        </div>
+        <i class="ph ph-user-plus"></i>
+        <ul class="member-list"></ul>
+        <div class="creating-group-button-container">
+          <button class="finish-creating-group"><i class="animation"></i>CREATE<i class="animation"></i></button>
+          <button class="close-creating-group"><i class="animation"></i>CLOSE<i class="animation"></i></button>
+        </div>
+      </div>
+      <div class="saved-groups-container">
+        <h2 class="saved-groups">Saved Groups</h2>
+        <p class="saved-groups-message">Saved groups will appear here</p>
+        <ul class="saved-groups-list"></ul>
+      </div>
+    </div>
   </div>
 
   <div class="name-container">
-    <p class="first name">Ryan 🏍️</p>
-    <p class="second name">Jasmine 🧘‍♀️</p>
-    <p class="third name">Tia 🩷</p>
-    <p class="fourth name">Addison 🐈‍⬛</p>
+    <p class="name"> </p>
     <div>
       <button class="shuffle"><i class="animation"></i>SHUFFLE<i class="animation"></i></button>
     </div>
   </div>
 
-  <img src="images/eos-mascot.png" alt="Decorative image" class="corner-image">
+  <!-- <img src="images/eos-mascot.png" alt="Decorative image" class="corner-image"> -->
 
   <script src="script.js"></script>
 
