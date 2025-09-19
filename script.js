@@ -210,6 +210,31 @@ function ensureSavedGroupsList() {
   }
 }
 
+function resetCreateForm() {
+  const nameInput = document.querySelector(".group-name");
+  if (nameInput) nameInput.value = "";
+
+  const membersStack = document.getElementById("members");
+  if (membersStack) {
+    membersStack.innerHTML = "";
+    const row = document.createElement("div");
+    row.className = "members-row";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "member-name";
+    input.placeholder = "Add a member";
+
+    const minus = document.createElement("i");
+    minus.className = "ph ph-user-minus";
+    minus.setAttribute("role", "button");
+    minus.setAttribute("aria-label", "Remove member");
+
+    row.append(input, minus);
+    membersStack.appendChild(row);
+  }
+}
+
 let currentGroupId = null;
 
 savedGroupsList?.addEventListener("click", (e) => {
@@ -269,6 +294,15 @@ function renderSavedGroups() {
   });
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const backBtn = document.querySelector(".back-button");
+  backBtn?.addEventListener("click", () => {
+    document.querySelector(".opening-screen").style.display = "block";
+    document.querySelector(".name-container").style.display = "flex";
+    setNamesBlurred(false);
+  });
+});
+
 
 document.addEventListener("DOMContentLoaded", renderSavedGroups);
 
@@ -308,6 +342,7 @@ const createGroupBtn = document.querySelector(".create-group");
 const createPanel = document.querySelector(".create-panel");
 
 createGroupBtn?.addEventListener("click", () => { 
+  resetCreateForm();  
   createPanel.style.display = "flex";
   createPanel.removeAttribute("hidden");
 });
@@ -345,6 +380,7 @@ finishBtn?.addEventListener("click", () => {
     savedGroupsList.hidden = false;
   }
 
+  resetCreateForm();   
   renderSavedGroups();
   populateGroupSelect();
 });
@@ -364,4 +400,5 @@ loadBtn?.addEventListener("click", () => {
 
 document.querySelector(".close-creating-group")?.addEventListener("click", () => {
   createPanel.style.display = "none";
+  resetCreateForm();
 });
