@@ -235,9 +235,43 @@ function resetCreateForm() {
   }
 }
 
+function unmarkStartedToday(groupId) {
+  const key = `repRoulette:started:${todayKey()}`;
+  let ids = [];
+  try { ids = JSON.parse(localStorage.getItem(key)) || []; } catch {}
+  const next = ids.filter(id => id !== groupId);
+  localStorage.setItem(key, JSON.stringify(next));
+}
+
 let currentGroupId = null;
 
 savedGroupsList?.addEventListener("click", (e) => {
+  const del = e.target.closest(".delete-group");
+  if (del) {
+    const li = e.target.closest(".saved-group");
+    if (!li) return;
+    const id = li.dataset.id;
+
+    const next = readGroups().filter(g => g.id !== id);
+    writeGroups(next);
+    unmarkStartedToday(id);
+
+    if (currentGroupId === id) {
+      document.querySelector(".opening-screen").style.display = "block";
+      currentGroupId = null;
+    }
+
+    li.remove();
+
+    if (!next.length) {
+      savedGroupsMessage.hidden = false;
+      savedGroupsList.hidden = true;
+      savedGroupsMessage.textContent = "Saved groups will appear here";
+    }
+
+    return;
+  }
+
   const li = e.target.closest(".saved-group");
   if (!li) return;
   const id = li.dataset.id;
@@ -287,9 +321,16 @@ function renderSavedGroups() {
     const li = document.createElement("li");
     li.className = "saved-group";
     li.dataset.id = g.id;
-    li.textContent = g.name;
-    li.setAttribute("role", "button");
-    li.tabIndex = 0;
+
+    const name = document.createElement("span");
+    name.className = "saved-group-name";
+    name.textContent = g.name;
+
+    const del = document.createElement("i");
+    del.className = "ph ph-trash-simple delete-group";
+    del.title = "Delete group";
+
+    li.append(name, del);
     savedGroupsList.appendChild(li);
   });
 }

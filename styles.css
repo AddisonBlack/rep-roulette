@@ -62,8 +62,19 @@ body {
   margin-top: 40px;
 }
 
+.saved-groups-row {
+  display: flex;
+  justify-content: center;
+}
+
 .saved-groups {
   font-size: 36px;
+}
+
+.saved-groups-list .ph-trash-simple {
+  position: relative;
+  left: 20px;
+  top: 2px;
 }
 
 .saved-groups-message {
@@ -91,10 +102,6 @@ body {
   cursor: pointer;
   border-radius: 4px;
   transition: background 0.2s ease;
-}
-
-.saved-groups-list li.saved-group:hover {
-  background: rgba(255,255,255,0.25);
 }
 
 /* Create Group Functionality */
