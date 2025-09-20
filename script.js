@@ -275,25 +275,7 @@ savedGroupsList?.addEventListener("click", (e) => {
   const li = e.target.closest(".saved-group");
   if (!li) return;
   const id = li.dataset.id;
-
-  const groups = readGroups();
-  const g = groups.find(x => x.id === id);
-  if (!g) return;
-
-  currentGroupId = id;
-  setNamesInMain(g.members);
-  document.querySelector(".opening-screen").style.display = "none";
-
-  const shuffleBtn = document.querySelector(".name-container .shuffle");
-  if (!hasStartedToday(id)) {
-    setNamesBlurred(true);
-    shuffleBtn.innerHTML = '<i class="animation"></i>START SET<i class="animation"></i>';
-    shuffleBtn.dataset.mode = "prestart";
-  } else {
-    setNamesBlurred(false);
-    shuffleBtn.innerHTML = '<i class="animation"></i>SHUFFLE<i class="animation"></i>';
-    shuffleBtn.dataset.mode = "normal";
-  }
+  window.location.href = `roulette.html?group=${encodeURIComponent(id)}`;
 });
 
 savedGroupsList?.addEventListener("keydown", (e) => {
@@ -336,14 +318,16 @@ function renderSavedGroups() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const backBtn = document.querySelector(".back-button");
-  backBtn?.addEventListener("click", () => {
-    document.querySelector(".opening-screen").style.display = "block";
-    document.querySelector(".name-container").style.display = "flex";
-    setNamesBlurred(false);
-  });
-});
+  const params = new URLSearchParams(window.location.search);
+  const groupId = params.get("group");
+  if (!groupId) return;
 
+  const groups = JSON.parse(localStorage.getItem("repRoulette:groups")) || [];
+  const group = groups.find(g => g.id === groupId);
+  if (!group) return;
+
+  setNamesInMain(group.members);
+});
 
 document.addEventListener("DOMContentLoaded", renderSavedGroups);
 
