@@ -1,0 +1,64 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Space Grotesk";
+}
+
+html, body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--rr-bg, linear-gradient(to bottom, #ffffff, #0099cc));
+}
+
+.policy-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  padding: 50px;
+  border-radius: 8px;
+}
+
+.ph-caret-double-left {
+  position: absolute;
+  margin-top: 10px;
+  color: black;
+  font-size: 24px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 2.5em;
+}
+
+h2 {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+  color: black;
+}
+
+.last-updated {
+  margin-top: 10px;
+  align-self: center;
+}
+
+p {
+  margin-bottom: 15px;
+  font-size: 1.1em;
+}
+
+a {
+  color: black;
+  text-decoration: underline;
+}
+
+footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 0.9em;
+  color:  black;
+}
