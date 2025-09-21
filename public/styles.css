@@ -284,7 +284,6 @@ button:focus {
 /* App Functionality */
 .title-wrapper {
   top: 20px;
-  left: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -358,4 +357,13 @@ a {
   width: 150px;
   height: auto;
   z-index: 100;
+}
+
+/* iOS-Specific Styles */
+.platform-ios .title-wrapper {
+  margin-top: 100px;
+}
+
+.platform-ios .ph-palette {
+  top: 55px;
 }

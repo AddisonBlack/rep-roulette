@@ -20,7 +20,6 @@ body {
 
 .title-wrapper {
   top: 20px;
-  left: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -161,4 +160,14 @@ a {
 
 .name.bump {
   animation: bump 220ms ease;
+}
+
+/* iOS-Specific Styles */
+.platform-ios .title-wrapper {
+  margin-top: 100px;
+}
+
+.platform-ios .ph-palette,
+.platform-ios .back-button {
+  top: 55px;
 }

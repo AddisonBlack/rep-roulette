@@ -26,6 +26,24 @@ function setNamesBlurred(on) {
   });
 }
 
+function enterPrestart() {
+  setNamesBlurred(true);
+  const btn = document.querySelector(".name-container .shuffle");
+  if (btn) {
+    btn.innerHTML = '<i class="animation"></i>START SET<i class="animation"></i>';
+    btn.dataset.mode = "prestart";
+  }
+}
+
+function enterNormal() {
+  setNamesBlurred(false);
+  const btn = document.querySelector(".name-container .shuffle");
+  if (btn) {
+    btn.innerHTML = '<i class="animation"></i>SHUFFLE<i class="animation"></i>';
+    btn.dataset.mode = "normal";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("repRoulette:theme");
   if (!saved) return;
@@ -379,6 +397,26 @@ function setNamesInMain(names) {
   });
   localStorage.removeItem("repRoulette:namesOrder");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const groupId = params.get("group");
+  if (!groupId) return;
+
+  const groups = JSON.parse(localStorage.getItem("repRoulette:groups")) || [];
+  const group = groups.find(g => g.id === groupId);
+  if (!group) return;
+
+  setNamesInMain(group.members);
+
+  currentGroupId = groupId;
+
+  if (!hasStartedToday(groupId)) {
+    enterPrestart();
+  } else {
+    enterNormal();
+  }
+});
 
 const createGroupBtn = document.querySelector(".create-group");
 const createPanel = document.querySelector(".create-panel");
