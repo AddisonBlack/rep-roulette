@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&family=Sulphur+Point:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+  <title>Rep Roulette</title>
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("repRoulette:theme");
+        if (!saved) return;
+        var data = JSON.parse(saved);
+        if (!data || !data.color) return;
+        var gradient = "linear-gradient(to bottom, #ffffff, " + data.color + ")";
+        document.documentElement.style.setProperty("--rr-bg", gradient);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <div class="opening-screen">
+    <div class="title-wrapper">
+      <div class="title-container">
+        <h1 class="header">Rep Roulette</h1>
+        <i class="ph ph-barbell"></i>
+        <a href="themes.html">
+          <i class="ph ph-palette"></i>
+        </a>
+      </div>
+      <p class="date"></p>
+    </div>
+    <div class="opening-container">
+      <div class="saved-groups-container">
+        <div class="button-container">
+          <h2 class="saved-groups">Saved Groups</h2>
+          <button class="create-group"><i class="animation"></i>CREATE<i class="animation"></i></button>
+        </div>
+        <div class="saved-groups-row">
+          <p class="saved-groups-message">Saved groups will appear here</p>
+          <li class="saved-groups-list"></li>
+        </div>
+      </div>
+      <div class="create-panel" hidden>
+        <div class="field">
+          <label for="group-name" class="group-name-label">New Group</label>
+          <input class="group-name" type="text" autocomplete="off" placeholder="Create a group name" />
+          <div id="members" class="members">
+            <div class="members-row">
+              <input class="member-name" type="text" autocomplete="off" placeholder="Add a member" />
+              <i class="ph ph-user-minus"></i>
+            </div>
+          </div>
+        </div>
+        <i class="ph ph-user-plus"></i>
+        <ul class="member-list"></ul>
+        <div class="creating-group-button-container">
+          <button class="finish-creating-group"><i class="animation"></i>CREATE<i class="animation"></i></button>
+          <button class="close-creating-group"><i class="animation"></i>CLOSE<i class="animation"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>

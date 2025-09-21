@@ -1,0 +1,122 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Space Grotesk";
+}
+
+html, body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--rr-bg, linear-gradient(to bottom, #ffffff, #0099cc));
+}
+
+/* App Functionality */
+.container {
+  height: 100vh;
+  background: transparent;
+}
+
+.title-wrapper {
+  top: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 200;
+  margin-top: 70px;
+}
+
+.title-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.header {
+  font-size: 50px;
+}
+
+.ph-palette {
+  font-size: 50px;
+  margin-top: 10px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 28px;
+  color: black;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.back-button:hover {
+  opacity: 0.7;
+}
+
+.theme-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  height: 100%;
+  margin-top: 100px;
+}
+
+.theme {
+  background: transparent;
+  color: black;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.theme:active {
+  background: transparent;
+}
+
+.theme.active {
+  font-weight: 700;
+  font-size: 30px;
+}
+
+.ph-caret-circle-right {
+  font-size: 26px;
+  display: none;
+}
+
+.ph-caret-circle-right.active {
+  display: inline-block;
+}
+
+.icon-two,
+.icon-three,
+.icon-four,
+.icon-five {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  a, button, .theme, .back-button, .theme-container i {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .theme,
+  .theme:active {
+    background-color: transparent !important;
+  }
+
+  button.theme {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}

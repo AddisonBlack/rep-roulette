@@ -1,0 +1,25 @@
+{
+  "name": "rep-roulette",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AddisonBlack/rep-roulette.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AddisonBlack/rep-roulette/issues"
+  },
+  "homepage": "https://github.com/AddisonBlack/rep-roulette#readme",
+  "description": "",
+  "dependencies": {
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.4.3"
+  }
+}
